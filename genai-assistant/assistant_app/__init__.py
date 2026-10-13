@@ -1,0 +1,1 @@
+"""Ollama and offline mock chat assistant."""

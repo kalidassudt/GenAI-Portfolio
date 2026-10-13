@@ -1,0 +1,9 @@
+fastapi>=0.115,<1
+uvicorn[standard]>=0.30,<1
+streamlit>=1.49,<2
+langchain-core>=0.3,<2
+langchain-ollama>=0.2,<2
+python-dotenv>=1.0,<2
+requests>=2.32,<3
+pytest>=8.3,<9
+httpx>=0.28,<1
