@@ -1,1 +1,23 @@
+Project 1: Credit Risk Prediction
 
+Industry: Banking / Financial Services
+
+Business Problem: Estimate the likelihood that a loan applicant may default based on historical applicant and loan data.
+
+Implementation:
+
+Process applicant, financial, and historical repayment data.
+
+Engineer relevant features and handle class imbalance.
+
+Build classification models using Logistic Regression, Random Forest, and XGBoost.
+
+Evaluate precision, recall, ROC-AUC, and probability calibration.
+
+Analyze feature importance and model explainability.
+
+Build a prediction API for loan-risk assessment.
+
+Expected Outcome: Support risk assessment with consistent, measurable model predictions.
+
+Technologies: Python, SQL, Pandas, Scikit-learn, XGBoost, SHAP, FastAPI
