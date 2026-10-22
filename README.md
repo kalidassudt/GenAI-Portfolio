@@ -53,6 +53,8 @@ The three Streamlit entry points can be deployed as separate apps from this repo
 
 Each app's `requirements.txt` is beside its entry point, so Community Cloud installs only that app's dependencies. No secrets are required for the demo modes. GenAI uses its mock provider by default in the cloud; RAG uses local hashing embeddings and extractive answers unless configured with a reachable Ollama service. Each app gets its own public `*.streamlit.app` URL after deployment completes.
 
+All three apps share the light portfolio theme configured in `.streamlit/config.toml`. The chat apps also support clearing and downloading the current conversation; the churn app supports exporting its synthetic dataset.
+
 ## Validation
 
 The project test suites are designed to run offline. The implementation was exercised with Python 3.14.3: ML pipeline tests passed (3), GenAI service/API tests passed (6), and RAG ingestion/retrieval/evaluation tests passed (6). A live `llama3.2:latest` request succeeded through both the GenAI API and RAG service. The ML model's measured synthetic holdout accuracy was `0.720` (150 rows); RAG sample recall@3 was `1.00` across three queries against one handbook. These are demo checks, not production performance claims.

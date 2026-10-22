@@ -22,8 +22,12 @@ def load_demo_model():
 
 
 st.set_page_config(page_title="Churn Signals", layout="wide")
+st.caption("GENAI + ML PORTFOLIO  /  02")
 st.title("Customer Churn Signals")
-st.caption("Synthetic customer data | Random forest | Local inference")
+st.markdown(
+    "Explore a reproducible churn model, review its holdout results, "
+    "and score a sample customer."
+)
 
 try:
     customers, report = load_demo_model()
@@ -33,7 +37,8 @@ except Exception as error:
 
 metric_columns = st.columns(len(report.metrics))
 for column, (metric_name, metric_value) in zip(metric_columns, report.metrics.items()):
-    column.metric(metric_name.replace("_", " ").title(), f"{metric_value:.1%}")
+    with column.container(border=True):
+        st.metric(metric_name.replace("_", " ").title(), f"{metric_value:.1%}")
 
 st.subheader("Holdout evaluation")
 evaluation_columns = st.columns([1, 1.4])
@@ -55,6 +60,12 @@ with evaluation_columns[1]:
 with st.expander("Synthetic dataset preview"):
     st.caption(f"{len(customers)} generated records; seed 42")
     st.dataframe(customers.head(12), hide_index=True, width="stretch")
+    st.download_button(
+        "Download synthetic dataset",
+        customers.to_csv(index=False),
+        file_name="customer-churn-demo.csv",
+        mime="text/csv",
+    )
 
 st.subheader("Score a customer")
 with st.form("customer-form"):
@@ -83,6 +94,10 @@ if submitted:
         ]
     )
     probability = float(predict_churn(report.model, customer)[0])
-    st.metric("Estimated churn probability", f"{probability:.1%}")
-    st.progress(probability)
+    with st.container(border=True):
+        st.metric("Estimated churn probability", f"{probability:.1%}")
+        st.progress(probability)
     st.caption("Model output is a demonstration, not a production customer decision.")
+
+st.divider()
+st.caption("Portfolio demo | Synthetic data only; not for real customer decisions.")

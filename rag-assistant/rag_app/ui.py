@@ -34,8 +34,12 @@ def create_assistant(files: list[tuple[str, bytes]]) -> tuple[KnowledgeAssistant
 
 
 st.set_page_config(page_title="Knowledge Desk", layout="wide")
+st.caption("GENAI + ML PORTFOLIO  /  03")
 st.title("Knowledge Desk")
-st.caption("PDF and TXT search | FAISS | Source-cited answers")
+st.markdown(
+    "Ask questions about your indexed files and inspect the cited passages "
+    "behind each answer."
+)
 
 if "assistant" not in st.session_state:
     try:
@@ -59,6 +63,7 @@ with st.sidebar:
         f"{st.session_state.embedding_provider} embeddings"
     )
     st.write("Indexed: " + ", ".join(st.session_state.indexed_files))
+    st.divider()
     uploaded_files = st.file_uploader(
         "Add PDF or TXT documents",
         type=["pdf", "txt"],
@@ -99,6 +104,24 @@ with st.sidebar:
         except Exception as error:
             st.error(f"Retrieval evaluation failed: {error}")
 
+    st.divider()
+    if st.button("Clear conversation", use_container_width=True):
+        st.session_state.messages = []
+        st.rerun()
+    if st.session_state.messages:
+        transcript_lines = []
+        for message in st.session_state.messages:
+            transcript_lines.append(f"{message['role'].title()}: {message['content']}")
+            for source in message.get("sources", []):
+                transcript_lines.append(f"Source: [{source['citation']}]")
+        st.download_button(
+            "Download conversation",
+            "\n\n".join(transcript_lines),
+            file_name="knowledge-desk-conversation.txt",
+            mime="text/plain",
+            use_container_width=True,
+        )
+
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
@@ -107,6 +130,7 @@ for message in st.session_state.messages:
                 for source in message["sources"]:
                     st.markdown(f"**[{source['citation']}]** {source['excerpt']}")
 
+st.caption("Try: How many weeks of parental leave are paid?")
 question = st.chat_input("Ask about the indexed documents")
 if question:
     st.session_state.messages.append({"role": "user", "content": question})
@@ -141,3 +165,6 @@ if question:
             )
         except (ValueError, RuntimeError) as error:
             st.error(f"Could not answer from the indexed documents: {error}")
+
+st.divider()
+st.caption("Portfolio demo | Verify important answers against the cited source documents.")
