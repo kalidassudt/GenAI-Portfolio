@@ -41,6 +41,18 @@ python -m pytest
 
 Repeat with `ml-predictor` and `rag-assistant`. The ML application is fully offline. GenAI and RAG use Ollama locally when available and have mock/extractive fallbacks; no API credentials are needed. Install Ollama and pull `llama3.2:latest` for local generated answers. Each app README includes its exact run command and environment variables.
 
+## Deploy the Streamlit apps
+
+The three Streamlit entry points can be deployed as separate apps from this repository on [Streamlit Community Cloud](https://share.streamlit.io/). Sign in with GitHub, choose **Create app**, and use repository `kalidassudt/GenAI-Portfolio` and branch `main`. Set the app file path as follows:
+
+| App | App file path |
+| --- | --- |
+| GenAI Assistant | `genai-assistant/assistant_app/ui.py` |
+| Customer Churn Signals | `ml-predictor/churn_app/app.py` |
+| Knowledge Desk RAG | `rag-assistant/rag_app/ui.py` |
+
+Each app's `requirements.txt` is beside its entry point, so Community Cloud installs only that app's dependencies. No secrets are required for the demo modes. GenAI uses its mock provider by default in the cloud; RAG uses local hashing embeddings and extractive answers unless configured with a reachable Ollama service. Each app gets its own public `*.streamlit.app` URL after deployment completes.
+
 ## Validation
 
 The project test suites are designed to run offline. The implementation was exercised with Python 3.14.3: ML pipeline tests passed (3), GenAI service/API tests passed (6), and RAG ingestion/retrieval/evaluation tests passed (6). A live `llama3.2:latest` request succeeded through both the GenAI API and RAG service. The ML model's measured synthetic holdout accuracy was `0.720` (150 rows); RAG sample recall@3 was `1.00` across three queries against one handbook. These are demo checks, not production performance claims.

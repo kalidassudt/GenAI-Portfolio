@@ -1,20 +1,28 @@
-"""Streamlit chat client for the FastAPI assistant."""
+"""Streamlit chat interface for the assistant service."""
 
 from __future__ import annotations
 
 import os
+from dataclasses import replace
 
-import requests
 import streamlit as st
+
+from assistant_app.config import Settings
+from assistant_app.service import ChatService
 
 st.set_page_config(page_title="GenAI Assistant", layout="centered")
 st.title("GenAI Assistant")
 st.caption("LangChain prompt | Ollama or deterministic mock mode")
 
+settings = Settings.from_env()
+ollama_enabled = os.getenv("OLLAMA_ENABLED", "false").lower() in {
+    "1",
+    "true",
+    "yes",
+}
+service = ChatService(replace(settings, ollama_enabled=ollama_enabled))
+
 with st.sidebar:
-    api_url = st.text_input(
-        "Assistant API", os.getenv("GENAI_API_URL", "http://127.0.0.1:8000")
-    )
     temperature = st.slider("Temperature", 0.0, 2.0, 0.2, 0.1)
     max_tokens = st.slider("Maximum response tokens", 64, 2048, 600, 64)
 
@@ -33,22 +41,15 @@ if question:
     with st.chat_message("assistant"):
         with st.spinner("Thinking"):
             try:
-                response = requests.post(
-                    f"{api_url.rstrip('/')}/chat",
-                    json={
-                        "question": question,
-                        "temperature": temperature,
-                        "max_tokens": max_tokens,
-                    },
-                    timeout=45,
+                result = service.answer(
+                    question,
+                    temperature=temperature,
+                    max_tokens=max_tokens,
                 )
-                response.raise_for_status()
-                payload = response.json()
-                answer = payload["answer"]
-                st.markdown(answer)
-                st.caption(f"Provider: {payload['provider']}")
+                st.markdown(result.answer)
+                st.caption(f"Provider: {result.provider}")
                 st.session_state.messages.append(
-                    {"role": "assistant", "content": answer}
+                    {"role": "assistant", "content": result.answer}
                 )
-            except (requests.RequestException, KeyError, ValueError) as error:
-                st.error(f"Assistant API unavailable: {error}")
+            except ValueError as error:
+                st.error(f"Assistant configuration error: {error}")
