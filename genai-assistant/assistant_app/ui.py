@@ -3,9 +3,15 @@
 from __future__ import annotations
 
 import os
+import sys
 from dataclasses import replace
+from pathlib import Path
 
 import streamlit as st
+
+project_root = str(Path(__file__).resolve().parents[1])
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
 
 from assistant_app.config import Settings
 from assistant_app.service import ChatService
